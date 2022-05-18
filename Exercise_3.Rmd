@@ -24,6 +24,8 @@ caro <- read_delim("caro60.csv")
 
 ```
 
+
+# Task 1: Segmentation
 ## Step a): Specify a temporal window v
 ### The sampling interval for this dataset is 1 minute. Use a temporal window v of 6 minutes, i.e. a window size of 6 positions (n±3).
 
@@ -34,6 +36,8 @@ caro <- read_delim("caro60.csv")
 5. pos[n] to pos[n+2]
 6. pos[n] to pos[n+3]
 
+## Step b): Measure the distance from every point to every other point within this temporal window v
+ 
 ```{r warning=FALSE}
 caro <- caro %>%
   mutate(
@@ -44,5 +48,51 @@ caro <- caro %>%
     nPlus2  = sqrt((E-lead(E,2))^2+(N-lead(N,2))^2), # distance to pos +2 minutes
     nPlus3  = sqrt((E-lead(E,3))^2+(N-lead(N,3))^2)  # distance to pos +3 minutes
   )
+
+```
+
+### Calculation the mean distance nMinus3, nMinus2, nMinus1, nPlus1, nPlus2, nPlus3
+```{r warning=FALSE}
+caro <- caro %>%
+  rowwise() %>%
+  mutate(
+    stepMean = mean(c(nMinus3, nMinus2, nMinus1, nPlus1,nPlus2, nPlus3))
+  ) %>%
+  ungroup() 
+
+caro
+
+```
+
+
+# Task 2: Specify and apply threshold d
+```{r warning=FALSE}
+hist(caro$stepMean)
+boxplot(caro$stepMean)
+summary(caro$stepMean)
+
+caro <- caro %>% 
+  ungroup() %>%
+  mutate(static = stepMean < mean(stepMean, na.rm = TRUE))
+
+
+caro_filter <- caro %>%
+  filter(!static)
+
+caro_filter%>%
+  ggplot(aes(E, N))  +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
+
+```
+## Task 3: Visualize segmented trajectories
+```{r warning=FALSE}
+
+ggplot(caro, aes(E, N, colour = static)) +
+  geom_path()+
+  geom_point() +
+  coord_equal()
 
 ```
