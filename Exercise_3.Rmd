@@ -152,5 +152,76 @@ ggplot(pedestrian, aes(N,E, col = as.factor(TrajID)))+
 ```
 
 # Task 6: Calculate similarity
+## Honestly, I had a bit of help here... 
+```{r warning=FALSE}
+pedestrian1 <- pedestrian %>%
+  filter(TrajID == 1) %>%
+  select(E,N)%>%
+  as.matrix() 
 
+pedestrian2 <- pedestrian %>%
+  filter(TrajID == 2) %>%
+  select(E,N) %>%
+  as.matrix() 
 
+pedestrian3 <- pedestrian %>%
+  filter(TrajID == 3) %>%
+  select(E,N) %>%
+  as.matrix() 
+
+pedestrian4 <- pedestrian %>%
+  filter(TrajID == 4) %>%
+  select(E,N) %>%
+  as.matrix() 
+
+pedestrian5 <- pedestrian %>%
+  filter(TrajID == 5) %>%
+  select(E,N) %>%
+  as.matrix()
+
+pedestrian6 <- pedestrian %>%
+  filter(TrajID == 6) %>%
+  select(E,N) %>%
+  as.matrix()
+
+DTW = c(DTW(pedestrian1, pedestrian2), 
+        DTW(pedestrian1, pedestrian3),
+        DTW(pedestrian1, pedestrian4),
+        DTW(pedestrian1, pedestrian5),
+        DTW(pedestrian1, pedestrian6))
+EditDist = c(EditDist(pedestrian1, pedestrian2),
+             EditDist(pedestrian1, pedestrian3),
+             EditDist(pedestrian1, pedestrian4),
+             EditDist(pedestrian1, pedestrian5),
+             EditDist(pedestrian1, pedestrian6))
+                         
+Frechet = c(Frechet(pedestrian1, pedestrian2),
+            Frechet(pedestrian1, pedestrian3),
+            Frechet(pedestrian1, pedestrian4),
+            Frechet(pedestrian1, pedestrian5),
+            Frechet(pedestrian1, pedestrian6))
+                         
+LCSS = c(LCSS(pedestrian1, pedestrian2, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrian1, pedestrian3, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrian1, pedestrian4, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrian1, pedestrian5, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrian1, pedestrian6, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1))
+
+similarity_DF <- data.frame(ID = seq(1:5), DTW, EditDist, Frechet, LCSS)
+
+similarity_DF <- similarity_DF %>% 
+  pivot_longer(-ID, names_to = "Measures", values_to = "Value")
+
+ggplot(similarity_DF, aes(as.factor(ID), Value, fill = as.factor(ID))) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~Measures, scales = "free_y") +
+  theme(legend.position = "none") +
+  labs(title = "Computed similarities using different measures between 
+       trajectory 1 and all the others",
+       y = "Value", x = "Comparison trajectory")
+```
