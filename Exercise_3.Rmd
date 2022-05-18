@@ -138,8 +138,19 @@ ggplot(caro2, aes(E, N, colour = segment_id)) +
   coord_equal()+
   labs(title = "Long segments (removed segements <5)")
 ```
-## Task 5: Similarity measures
+# Task 5: Similarity measures
 ```{r warning=FALSE}
 pedestrian <- read_delim("pedestrian.csv")
 
+ggplot(pedestrian, aes(N,E, col = as.factor(TrajID)))+
+  geom_point() +
+  geom_path() +
+  facet_wrap(~TrajID) +
+  labs(title = "Visual comparison of the 6 trajectories")
+
+
 ```
+
+# Task 6: Calculate similarity
+
+
