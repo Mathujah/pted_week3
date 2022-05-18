@@ -96,3 +96,50 @@ ggplot(caro, aes(E, N, colour = static)) +
   coord_equal()
 
 ```
+## Task 4: Segment-based analysis
+
+```{r warning=FALSE}
+
+rle_id <- function(vec){
+  x <- rle(vec)$lengths
+  as.factor(rep(seq_along(x), times=x))
+  }
+
+caro60 <- caro %>%
+  mutate(segment_id = rle_id(static))
+  
+caro2 <- caro60 %>%
+  mutate(segment_id = rle_id(static))%>%
+  filter(!static) %>%
+  group_by(segment_id) %>%
+  mutate(duration = n()) %>%
+  filter(duration>5)
+
+
+caro2
+
+```
+
+
+### Moving segments coloured by segment ID
+
+```{r warning=FALSE}
+ggplot(caro60, aes(E, N, colour = segment_id)) +
+  theme(legend.position="none")+       
+  geom_path()+
+  geom_point() +
+  coord_equal()+
+  labs(title = "All segments (uncleaned)")
+
+ggplot(caro2, aes(E, N, colour = segment_id)) +
+  theme(legend.position="none")+   
+  geom_path()+
+  geom_point() +
+  coord_equal()+
+  labs(title = "Long segments (removed segements <5)")
+```
+## Task 5: Similarity measures
+```{r warning=FALSE}
+pedestrian <- read_delim("pedestrian.csv")
+
+```
