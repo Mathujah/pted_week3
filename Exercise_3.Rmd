@@ -152,7 +152,7 @@ ggplot(pedestrian, aes(N,E, col = as.factor(TrajID)))+
 ```
 
 # Task 6: Calculate similarity
-## Honestly, I had a bit of help here... 
+## Honestly, I had a bit of help for this task. Otherwise I could not finished it by now... 
 ```{r warning=FALSE}
 pedestrian1 <- pedestrian %>%
   filter(TrajID == 1) %>%
